@@ -1,0 +1,58 @@
+{
+  "fillingFor": [
+    "Myself",
+    "Family Member",
+    "Friend"
+  ],
+  "gender": [
+    "Male",
+    "Female",
+    "Other"
+  ],
+  "city": [
+    "Coimbatore",
+    "Tiruppur",
+    "Pollachi",
+    "Erode",
+    "Salem",
+    "Namakkal",
+    "Karur",
+    "Palakkad",
+    "Nilgiris",
+    "Dharapuram",
+    "Udumalpet",
+    "Palani",
+    "Oddanchatram",
+    "Rasipuram",
+    "Dharmapuri",
+    "Sankagiri"
+  ],
+  "concern": [
+    "Gynaec Oncology",
+    "Hysterectomy / Uterine Fibroids",
+    "Hernia",
+    "Colon & Rectum Problems",
+    "Weight Loss (Bariatric Surgery)",
+    "Kidney, Prostate & Bladder Problems",
+    "Urological Cancer",
+    "Uterine Fibroids",
+    "Thyroid Problem",
+    "Lung Problem",
+    "GI Cancer"
+  ],
+  "surgeryAdvised": [
+    "Yes",
+    "No",
+    "Not Sure"
+  ],
+  "duration": [
+    "Less than 1 month",
+    "1–6 months",
+    "More than 6 months",
+    "More than 1 year"
+  ],
+  "comfortable": [
+    "Yes",
+    "No"
+  ]
+}
