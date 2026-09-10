@@ -12,8 +12,8 @@
   <link rel="icon" href="assets/kmch-logo.png" type="image/png">
   <link rel="preload" href="assets/robotic-surgery.webp" as="image" fetchpriority="high">
   <link rel="stylesheet" href="assets/fonts.css">
-  <link rel="stylesheet" href="styles.css?v=mobile2">
-  <script src="script.js?v=mobile2" defer></script>
+  <link rel="stylesheet" href="styles.css?v=handoff1">
+  <script src="script.js?v=handoff1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -37,7 +37,7 @@
     <symbol id="i-lungs" viewBox="0 0 48 48"><path d="M21 8v14c-5-2-4-11-9-8-4 4-9 17-7 23 2 6 13 0 16-3V22m6-14v14c5-2 4-11 9-8 4 4 9 17 7 23-2 6-13 0-16-3V22m-6 0 3-3 3 3"/></symbol>
   </defs></svg>
 
-  <div class="announcement"><span class="status-dot"></span><span>FREE ROBOTIC SURGERY CONSULTATION CAMP</span><span class="announcement-date">September 01–30, 2026</span><a href="#camp">Explore the camp <span aria-hidden="true">↗</span></a></div>
+  <div class="announcement" role="region" aria-label="Camp announcement"><span class="status-dot"></span><span>FREE ROBOTIC SURGERY CONSULTATION CAMP</span><span class="announcement-date">September 01–30, 2026</span><a href="#camp">Explore the camp <span aria-hidden="true">↗</span></a></div>
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="#" aria-label="KMCH, back to top"><img src="assets/kmch-logo.png" alt="KMCH" width="63" height="59"></a>
@@ -49,6 +49,7 @@
   </header>
 
   <main id="main">
+    <noscript><p class="container">To book without JavaScript, call <a href="tel:+917418887411">+91 74188 87411</a>.</p></noscript>
     <section id="camp" class="hero container" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="eyebrow"><span class="eyebrow-line"></span> FREE ROBOTIC SURGERY CONSULTATION</p>
@@ -86,8 +87,8 @@
 
     </main>
 
-  <footer><div class="container footer-top"><a class="brand" href="#" aria-label="KMCH, back to top"><img src="assets/kmch-logo.png" alt="KMCH" width="63" height="59"></a><a class="text-link" href="https://kmchhospitals.com/" target="_blank" rel="noopener noreferrer">Visit KMCH website <svg><use href="#i-diagonal"/></svg></a></div><div class="container footer-bottom"><p>© 2026 Kovai Medical Center and Hospital. All rights reserved.</p><p>*Packages subject to clinical assessment and applicable terms. Robotic surgery visual is a representative rendering.</p></div></footer>
-  <div class="mobile-booking"><a href="tel:+917418887411" aria-label="Call camp team"><svg><use href="#i-phone"/></svg> Call us</a><a class="button" href="#appointment">Book free consultation <svg><use href="#i-diagonal"/></svg></a></div>
+  <footer><div class="container footer-top"><a class="brand" href="#" aria-label="KMCH, back to top"><img src="assets/kmch-logo.png" alt="KMCH" width="63" height="59"></a><a class="text-link" href="https://kmchhospitals.com/" target="_blank" rel="noopener noreferrer">Visit KMCH website <svg><use href="#i-diagonal"/></svg></a></div><div class="container footer-bottom"><p>© 2026 Kovai Medical Center and Hospital. All rights reserved.</p><p>*Packages subject to clinical assessment and applicable terms. Robotic surgery visual is a representative rendering.</p></div><div class="container footer-privacy"><details class="privacy-notice"><summary>Privacy: how we use your details</summary><p>Your contact details and health answers are sent to KMCH’s consultation team through Google Apps Script and stored in Google Sheets to arrange your consultation. Campaign identifiers, when present, are stored with your enquiry to identify its source. This page does not send your form answers to advertising or analytics tags. For questions about your details, call <a href="tel:+917418887411">+91 74188 87411</a>.</p></details></div></footer>
+  <div class="mobile-booking" role="navigation" aria-label="Quick booking"><a href="tel:+917418887411" aria-label="Call us: KMCH camp team"><svg><use href="#i-phone"/></svg> Call us</a><a class="button" href="#appointment">Book free consultation <svg><use href="#i-diagonal"/></svg></a></div>
 
   <dialog class="consultation-modal" id="consultation-modal" aria-labelledby="modal-title">
     <button type="button" class="modal-close" aria-label="Close consultation form">×</button><div class="modal-shell">
@@ -99,7 +100,7 @@
           <h2 id="modal-title" tabindex="-1">Let’s get to know you.</h2>
           <ol class="form-progress" aria-label="Form progress"><li aria-current="step"><span>1</span> Your details</li><li><span>2</span> Your health</li><li><span>3</span> Preferences</li></ol>
           <p class="step-description" id="step-description">Step 1 of 3 · All fields on this step are required.</p>
-          <form id="lead-form" novalidate>
+          <form id="lead-form" method="post" novalidate>
             <fieldset class="form-step" data-step="0"><legend class="sr-only">Your details</legend>
               <div class="field"><label for="full-name">Full Name <span>*</span></label><input id="full-name" name="name" autocomplete="name" placeholder="Enter full name" minlength="2" maxlength="80" required></div>
               <fieldset class="field"><legend>Are you filling this form for? <span>*</span></legend><div class="choice-group"><label class="choice"><input type="radio" name="fillingFor" value="Myself" required><span>Myself</span></label><label class="choice"><input type="radio" name="fillingFor" value="Family Member" required><span>Family Member</span></label><label class="choice"><input type="radio" name="fillingFor" value="Friend" required><span>Friend</span></label></div></fieldset>
@@ -115,6 +116,7 @@
               <div class="field"><label for="duration">How long have you had this problem? <small>Optional</small></label><select id="duration" name="duration"><option value="">Select duration</option><option>Less than 1 month</option><option>1–6 months</option><option>More than 6 months</option><option>More than 1 year</option></select></div>
               <fieldset class="field"><legend>Are you comfortable taking treatment at Coimbatore KMCH? <small>Optional</small></legend><div class="choice-group"><label class="choice"><input type="radio" name="comfortable" value="Yes"><span>Yes</span></label><label class="choice"><input type="radio" name="comfortable" value="No"><span>No</span></label></div></fieldset>
               <label class="modal-consent"><input type="checkbox" name="consent" required><span>I agree to share these details with KMCH and be contacted about this consultation. If applying for someone else, I have their permission. <b>*</b></span></label>
+              <details class="privacy-notice"><summary>Privacy: how we use your details</summary><p>Your contact details and health answers are sent to KMCH’s consultation team through Google Apps Script and stored in Google Sheets to arrange your consultation. Campaign identifiers, when present, are stored with your enquiry to identify its source. This page does not send your form answers to advertising or analytics tags. For questions about your details, call <a href="tel:+917418887411">+91 74188 87411</a>.</p></details>
               <p class="connection-notice" id="connection-notice">Online booking is being connected. You can book now by calling <a href="tel:+917418887411">+91 74188 87411</a>.</p>
             </fieldset>
             <div class="honeypot" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>

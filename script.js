@@ -153,6 +153,9 @@ leadForm.addEventListener('submit', async event => {
     const response = await fetch(leadEndpoint, { method: 'POST', headers: { 'Content-Type': directSheets ? 'text/plain;charset=utf-8' : 'application/json' }, credentials: 'omit', body: JSON.stringify(payload), signal: AbortSignal.timeout(25000) });
     const result = await response.json();
     if (!response.ok || result.ok !== true) throw new Error(result.error || 'Your request could not be confirmed. Please call +91 74188 87411.');
+    // A tag manager may listen for this confirmed success event. Never include form answers.
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: 'kmch_lead_submitted' });
     leadForm.reset(); requestId = ''; completed = true;
     document.querySelector('#form-content').hidden = true;
     document.querySelector('#form-success').hidden = false;

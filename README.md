@@ -6,7 +6,7 @@ The page uses KMCH’s official logo, website colours (#194998, #09A2D6, #F0F4F8
 
 ## Google Sheets lead capture
 
-The GitHub Pages form uses the public Apps Script endpoint in `api/config`. It checks receiver readiness and the destination headers before enabling submission. The current Google deployment needs the updated `integration/Code.gs`; follow [the setup steps](integration/SETUP.md). Live delivery remains pending until that version is deployed and a test row is verified.
+The GitHub Pages form uses the public Apps Script endpoint in `api/config`. It checks receiver readiness and the destination headers before enabling submission. The deployed receiver is connected. A real enquiry through the live mobile form was verified in the sheet on September 10, 2026, and the test entry was removed. See [the setup notes](integration/SETUP.md) when maintaining the existing deployment.
 
 The receiver is write-only, validates the nine answers and consent, rejects oversized requests and the spam field, prevents spreadsheet formula injection and duplicate request IDs, and applies a basic per-phone submission limit. Keep the Google Sheet private. No credentials are embedded in frontend files.
 
@@ -16,7 +16,7 @@ Leads include all nine form answers, consent, timestamp, UTM parameters, GCLID, 
 
 ## Sources
 
-- [KMCH official website](https://kmchhospitals.com/) — logo, blue/cyan palette, hospital photo.
+- [KMCH official website](https://kmchhospitals.com/) — logo and blue/cyan palette.
 - Magnific / Freepik stock item 61255985 — robotic-assisted surgery in an operating room, downloaded through the connected Magnific account. This is a representative 3D rendering, not a photo of KMCH equipment.
 - [Google Apps Script web apps](https://developers.google.com/apps-script/guides/web) and [Sheet appendRow](https://developers.google.com/apps-script/reference/spreadsheet/sheet#appendrowrowcontents) — integration reference.
 
@@ -26,4 +26,4 @@ GitHub Pages serves `main` at https://manjumogebettu97-art.github.io/KMCH/. `npm
 
 Three steps: name / filling for / mobile / gender; city / health concern / surgery advice; duration / treatment at Coimbatore / consent. Questions 1–7 are required; duration and treatment preference remain optional as supplied. The repeated Gynaec Oncology choice is shown once. All other supplied choices are preserved, including overlapping duration options. The dialog supports Escape, focus restoration, keyboard navigation, per-step validation, and previous-answer retention.
 
-Target: https://docs.google.com/spreadsheets/d/1I6PDYKCnt2Jn3h5WCdaovEcQDuEwXY4hoFQoq81yN7I/edit#gid=906712996 — **Landing Page Leads**, columns A:S. Existing tabs were preserved. Live writes are not yet connected.
+Target: https://docs.google.com/spreadsheets/d/1I6PDYKCnt2Jn3h5WCdaovEcQDuEwXY4hoFQoq81yN7I/edit#gid=906712996 — **Landing Page Leads**, columns A:S. Existing tabs were preserved. Live writes have been verified.
