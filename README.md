@@ -24,7 +24,7 @@ Leads include all nine form answers, consent, timestamp, UTM parameters, GCLID, 
 - Magnific / Freepik stock item 61255985 — robotic-assisted surgery in an operating room, downloaded through the connected Magnific account. This is a representative 3D rendering, not a photo of KMCH equipment.
 - [Google Apps Script web apps](https://developers.google.com/apps-script/guides/web) and [Sheet appendRow](https://developers.google.com/apps-script/reference/spreadsheet/sheet#appendrowrowcontents) — integration reference.
 
-No public deployment has been made.
+For a static GitHub Pages preview, run `npm run build:pages` and publish `build/pages` on the `gh-pages` branch. This includes only public assets; the popup works, but live submission remains disabled because GitHub Pages does not run the Node backend.
 
 ## Updated popup form
 

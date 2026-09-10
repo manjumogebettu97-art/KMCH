@@ -83,7 +83,7 @@ dialog.addEventListener('click', event => {
 dialog.addEventListener('close', () => { document.body.classList.remove('modal-open'); opener?.focus({ preventScroll: true }); });
 backButton.addEventListener('click', () => { if (!submitting) showStep(step - 1); });
 leadForm.addEventListener('input', () => { if (!submitting) requestId = ''; });
-fetch('/api/config').then(response => response.ok ? response.json() : null).then(config => {
+fetch('api/config').then(response => response.ok ? response.json() : null).then(config => {
   leadCaptureEnabled = config?.leadCaptureEnabled === true;
   submitButton.disabled = !leadCaptureEnabled;
   notice.hidden = leadCaptureEnabled;
@@ -117,7 +117,7 @@ leadForm.addEventListener('submit', async event => {
   formStatus.textContent = 'Sending your request…';
   formStatus.classList.remove('error');
   try {
-    const response = await fetch('/api/leads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: AbortSignal.timeout(25000) });
+    const response = await fetch('api/leads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: AbortSignal.timeout(25000) });
     const result = await response.json();
     if (!response.ok || result.ok !== true) throw new Error(result.error || 'Your request could not be confirmed. Please call +91 74188 87411.');
     leadForm.reset(); requestId = ''; completed = true;
