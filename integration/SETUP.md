@@ -1,15 +1,21 @@
-# Activate Google Sheets submissions
+# Connect the GitHub Pages form
 
-The **Landing Page Leads** tab is already created in the supplied spreadsheet, with all nine answers, consent, campaign information, and submission status. Existing tabs are untouched.
+The site sends validated enquiries directly to Google Apps Script, which writes only to **Landing Page Leads**. No paid Node hosting or client-side secret is needed. Keep the spreadsheet private.
 
-The remaining step needs the Google account owner because the connected Sheets tool cannot create or deploy an Apps Script web app.
+## Final update in your existing Apps Script project
 
-1. Open the supplied spreadsheet and choose **Extensions → Apps Script**.
-2. Copy the contents of the local `integration/Deploy.private.gs` file into the Apps Script editor. Save it. This private file includes the prepared handler and a setup function; keep it out of public repositories.
-3. Select **configureKMCH** from the function dropdown and click **Run** once. Authorize Google if prompted. This configures authentication to match the local server.
-4. Choose **Deploy → New deployment → Web app**. Set **Execute as: Me** and **Who has access: Anyone**, then deploy. The endpoint requires the server-held token before writing; spreadsheet sharing does not need to change.
-5. Send the resulting `/exec` web-app URL back here. I can then set `GOOGLE_APPS_SCRIPT_URL` in `.env`, restart the server, and verify a clearly marked test submission in the new tab.
+1. Open **KMCH Form** in Apps Script and select **Code.gs**.
+2. Replace all editor contents with the complete code in [Code.gs](Code.gs), then save.
+3. Choose **Deploy → Manage deployments → Edit (pencil)**.
+4. Under **Version**, choose **New version**. Keep **Execute as: Me** and **Who has access: Anyone**, then click **Deploy**. Editing this deployment keeps the URL already configured on the website.
+5. Refresh the landing page. It enables submission only after the script confirms that the destination tab has the correct headers.
 
-The page is currently available at http://localhost:3000. You can open and navigate all three popup steps, but submission is disabled until the connection is configured. Phone booking remains available.
+The old configureKMCH setup function is no longer needed. Existing Script Properties can stay; no secret is used by the public form. The optional Node adapter can still authenticate using its private token.
 
-For hosting later, configure both environment values from `.env` privately on the host. The file and the private deployment script are excluded from Git and cannot be served by the website.
+## Verification
+
+Send one clearly marked test enquiry, verify its answers in Landing Page Leads, then delete only that test row. The frontend requires a readable positive response before displaying success; a failed request retains the answers and request ID so a retry cannot create a duplicate.
+
+The public receiver exposes no lead-reading route. It validates all choices and consent, caps request size, rejects the hidden spam field, prevents spreadsheet formulas and duplicate request IDs, and limits repeated submissions for a phone number. This basic limit is not a CAPTCHA and does not prevent distributed spam. Apps Script quotas still apply.
+
+The updated receiver is prepared and tested locally. It must be redeployed by the Google account owner before live delivery can be verified.

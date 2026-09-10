@@ -32,11 +32,27 @@ const formStatus = document.querySelector('#form-status');
 const notice = document.querySelector('#connection-notice');
 let step = 0;
 let leadCaptureEnabled = false;
+let leadEndpoint = 'api/leads';
+let directSheets = false;
 let requestId = '';
 let submitting = false;
 let completed = false;
 let opener;
 const titles = ['Let’s get to know you.', 'Tell us about your health.', 'One last step.'];
+const specialtyCards = [...document.querySelectorAll('.specialty-card')];
+const mobileLayout = window.matchMedia('(max-width: 760px)');
+function updateSpecialtyLayout() {
+  specialtyCards.forEach(card => {
+    card.open = !mobileLayout.matches;
+    card.querySelector('summary').tabIndex = mobileLayout.matches ? 0 : -1;
+  });
+}
+specialtyCards.forEach(card => card.querySelector('summary').addEventListener('click', event => { if (!mobileLayout.matches) event.preventDefault(); }));
+updateSpecialtyLayout();
+mobileLayout.addEventListener('change', updateSpecialtyLayout);
+specialtyCards.forEach(card => card.addEventListener('toggle', () => {
+  if (mobileLayout.matches && card.open) specialtyCards.forEach(other => { if (other !== card) other.open = false; });
+}));
 
 function showStep(index, focus = true) {
   step = index;
@@ -46,7 +62,7 @@ function showStep(index, focus = true) {
     item.classList.toggle('complete', i < step);
   });
   title.textContent = titles[step];
-  description.textContent = `Step ${step + 1} of 3 · Fields marked * are required.`;
+  description.textContent = step < 2 ? `Step ${step + 1} of 3 · All fields on this step are required.` : 'Step 3 of 3 · Treatment preferences are optional.';
   document.querySelector('.step-counter').textContent = `${step + 1} / 3`;
   backButton.hidden = step === 0;
   nextButton.hidden = step === 2;
@@ -83,15 +99,31 @@ dialog.addEventListener('click', event => {
 dialog.addEventListener('close', () => { document.body.classList.remove('modal-open'); opener?.focus({ preventScroll: true }); });
 backButton.addEventListener('click', () => { if (!submitting) showStep(step - 1); });
 leadForm.addEventListener('input', () => { if (!submitting) requestId = ''; });
-fetch('api/config').then(response => response.ok ? response.json() : null).then(config => {
-  leadCaptureEnabled = config?.leadCaptureEnabled === true;
-  submitButton.disabled = !leadCaptureEnabled;
+async function checkConnection() {
+  try {
+    const response = await fetch('api/config', { cache: 'no-store' });
+    const config = response.ok ? await response.json() : null;
+    if (config?.transport === 'apps-script' && /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(config.endpoint)) {
+      leadEndpoint = config.endpoint;
+      directSheets = true;
+      const status = await fetch(leadEndpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'status' }), signal: AbortSignal.timeout(15000), credentials: 'omit' });
+      const result = await status.json();
+      leadCaptureEnabled = status.ok && result.ok === true && result.publicFormVersion === 1;
+    } else leadCaptureEnabled = config?.leadCaptureEnabled === true;
+  } catch { leadCaptureEnabled = false; }
+  submitButton.disabled = !leadCaptureEnabled || submitting;
   notice.hidden = leadCaptureEnabled;
-}).catch(() => {});
+}
+checkConnection();
 
 function validateStep() {
   const invalid = [...steps[step].querySelectorAll('input, select')].find(input => !input.checkValidity());
-  if (invalid) { invalid.reportValidity(); return false; }
+  if (invalid) {
+    const field = invalid.closest('.field') || invalid.closest('.modal-consent');
+    field?.classList.add('field-error');
+    invalid.addEventListener('input', () => field?.classList.remove('field-error'), { once: true });
+    invalid.focus(); invalid.reportValidity(); return false;
+  }
   return true;
 }
 leadForm.addEventListener('submit', async event => {
@@ -107,6 +139,7 @@ leadForm.addEventListener('submit', async event => {
   requestId ||= crypto.randomUUID();
   const parameters = new URLSearchParams(location.search);
   const payload = Object.fromEntries(['name','phone','fillingFor','gender','city','concern','surgeryAdvised','duration','comfortable','website'].map(name => [name, value(name)]));
+  if (directSheets) payload.source = 'kmch-landing-page';
   payload.consent = leadForm.querySelector('[name="consent"]').checked;
   payload.requestId = requestId;
   payload.campaign = Object.fromEntries(['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid'].map(key => [key, parameters.get(key) || '']));
@@ -117,7 +150,7 @@ leadForm.addEventListener('submit', async event => {
   formStatus.textContent = 'Sending your request…';
   formStatus.classList.remove('error');
   try {
-    const response = await fetch('api/leads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: AbortSignal.timeout(25000) });
+    const response = await fetch(leadEndpoint, { method: 'POST', headers: { 'Content-Type': directSheets ? 'text/plain;charset=utf-8' : 'application/json' }, credentials: 'omit', body: JSON.stringify(payload), signal: AbortSignal.timeout(25000) });
     const result = await response.json();
     if (!response.ok || result.ok !== true) throw new Error(result.error || 'Your request could not be confirmed. Please call +91 74188 87411.');
     leadForm.reset(); requestId = ''; completed = true;
