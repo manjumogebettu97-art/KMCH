@@ -1,3 +1,16 @@
+// Only fixed UI labels and step numbers belong in analytics; never pass form values.
+function trackEvent(name, parameters = {}) {
+  try { window.gtag?.('event', name, { send_to: 'G-7LXYJ200S2', form_id: 'consultation', ...parameters }); }
+  catch { /* Tracking must never prevent booking or a call. */ }
+}
+function ctaLocation(element) {
+  const locations = [['.mobile-booking','sticky_mobile'],['.site-header','header'],['.hero-actions','hero'],['.specialty-card','specialties'],['.booking-invite','appointment'],['.consultation-modal','form'],['footer','footer']];
+  return locations.find(([selector]) => element.closest(selector))?.[1] || 'page';
+}
+document.querySelectorAll('a[href^="tel:"]').forEach(link => {
+  link.addEventListener('click', () => trackEvent('click_to_call', { cta_location: ctaLocation(link) }));
+});
+
 const menuToggle = document.querySelector('.menu-toggle');
 const mobileNav = document.querySelector('.mobile-nav');
 function closeMenu() {
@@ -37,6 +50,7 @@ let directSheets = false;
 let requestId = '';
 let submitting = false;
 let completed = false;
+let formStarted = false;
 let opener;
 const titles = ['Let’s get to know you.', 'Tell us about your health.', 'One last step.'];
 const specialtyCards = [...document.querySelectorAll('.specialty-card')];
@@ -69,6 +83,7 @@ function showStep(index, focus = true) {
   submitButton.hidden = step !== 2;
   submitButton.disabled = !leadCaptureEnabled;
   formStatus.textContent = '';
+  if (dialog.open) trackEvent('form_step_view', { step_number: step + 1 });
   if (focus) { title.focus({ preventScroll: true }); document.querySelector('.modal-main').scrollTop = 0; }
 }
 function openForm(event) {
@@ -82,6 +97,8 @@ function openForm(event) {
     showStep(0, false);
   }
   dialog.showModal();
+  trackEvent('booking_click', { cta_location: ctaLocation(opener) });
+  trackEvent('form_step_view', { step_number: step + 1 });
   document.body.classList.add('modal-open');
   title.focus({ preventScroll: true });
 }
@@ -96,9 +113,15 @@ dialog.addEventListener('click', event => {
   const rect = dialog.getBoundingClientRect();
   if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
 });
-dialog.addEventListener('close', () => { document.body.classList.remove('modal-open'); opener?.focus({ preventScroll: true }); });
+dialog.addEventListener('close', () => { if (!completed && !submitting) trackEvent('consultation_close', { step_number: step + 1 }); document.body.classList.remove('modal-open'); opener?.focus({ preventScroll: true }); });
 backButton.addEventListener('click', () => { if (!submitting) showStep(step - 1); });
-leadForm.addEventListener('input', () => { if (!submitting) requestId = ''; });
+leadForm.addEventListener('input', event => {
+  if (!submitting) requestId = '';
+  if (!formStarted && event.target.name !== 'website') {
+    formStarted = true;
+    trackEvent('consultation_start');
+  }
+});
 async function checkConnection() {
   try {
     const response = await fetch('api/config', { cache: 'no-store' });
@@ -119,6 +142,7 @@ checkConnection();
 function validateStep() {
   const invalid = [...steps[step].querySelectorAll('input, select')].find(input => !input.checkValidity());
   if (invalid) {
+    trackEvent('consultation_validation_error', { step_number: step + 1 });
     const field = invalid.closest('.field') || invalid.closest('.modal-consent');
     field?.classList.add('field-error');
     invalid.addEventListener('input', () => field?.classList.remove('field-error'), { once: true });
@@ -128,7 +152,9 @@ function validateStep() {
 }
 leadForm.addEventListener('submit', async event => {
   event.preventDefault();
-  if (submitting || !validateStep()) return;
+  if (submitting) return;
+  if (step === 2 && leadCaptureEnabled) trackEvent('consultation_submit_attempt');
+  if (!validateStep()) return;
   if (step < 2) { showStep(step + 1); return; }
   if (!leadCaptureEnabled) return;
   // Read every step, including inactive fieldsets, without losing earlier answers.
@@ -154,13 +180,17 @@ leadForm.addEventListener('submit', async event => {
     const result = await response.json();
     if (!response.ok || result.ok !== true) throw new Error(result.error || 'Your request could not be confirmed. Please call +91 74188 87411.');
     // A tag manager may listen for this confirmed success event. Never include form answers.
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({ event: 'kmch_lead_submitted' });
-    leadForm.reset(); requestId = ''; completed = true;
+    try {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: 'kmch_lead_submitted' });
+    } catch { /* A failing tag must not hide a confirmed booking. */ }
+    trackEvent('generate_lead');
+    leadForm.reset(); requestId = ''; completed = true; formStarted = false;
     document.querySelector('#form-content').hidden = true;
     document.querySelector('#form-success').hidden = false;
     if (dialog.open) document.querySelector('#success-title').focus({ preventScroll: true });
   } catch (error) {
+    trackEvent('consultation_submit_error', { error_type: error.name === 'TimeoutError' ? 'timeout' : 'unconfirmed' });
     formStatus.textContent = error.name === 'TimeoutError' ? 'We could not confirm your request. Please retry or call +91 74188 87411.' : error.message;
     formStatus.classList.add('error');
   } finally {
