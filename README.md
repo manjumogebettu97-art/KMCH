@@ -27,3 +27,7 @@ GitHub Pages serves `main` at https://manjumogebettu97-art.github.io/KMCH/. `npm
 Three steps: name / filling for / mobile / gender; city / health concern / surgery advice; duration / treatment at Coimbatore / consent. Questions 1–7 are required; duration and treatment preference remain optional as supplied. The repeated Gynaec Oncology choice is shown once. All other supplied choices are preserved, including overlapping duration options. The dialog supports Escape, focus restoration, keyboard navigation, per-step validation, and previous-answer retention.
 
 Target: https://docs.google.com/spreadsheets/d/1I6PDYKCnt2Jn3h5WCdaovEcQDuEwXY4hoFQoq81yN7I/edit#gid=906712996 — **Landing Page Leads**, columns A:S. Existing tabs were preserved. Live writes have been verified.
+
+## Google Analytics
+
+GA4 measurement ID `G-7LXYJ200S2` is installed directly through the supplied Google tag, sharing dataLayer with GTM-KBSMCVBN. The published GTM container did not contain this GA4 ID when checked on September 11, 2026. Do not add a second configuration for the same measurement ID in GTM while this direct installation is active. Confirm received data in GA4 Realtime; account reports and key-event configuration require the Analytics account owner. The form's `kmch_lead_submitted` custom dataLayer event is retained; no extra GA4 lead event is introduced by this installation.
