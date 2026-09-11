@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -12,6 +13,9 @@ const schema = JSON.parse(readFileSync(path.join(root, 'form-schema.json'), 'utf
 const requiredChoices = ['fillingFor', 'gender', 'city', 'concern', 'surgeryAdvised'];
 const optionalChoices = ['duration', 'comfortable'];
 const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.webp': 'image/webp', '.png': 'image/png', '.ttf': 'font/ttf' };
+// Authorize only the exact inline GTM bootstrap, without enabling arbitrary inline scripts.
+const tagBootstrap = readFileSync(path.join(root, 'index.html'), 'utf8').match(/<script>([\s\S]*?)<\/script>/)?.[1];
+const tagHash = createHash('sha256').update(tagBootstrap || '').digest('base64');
 const rates = new Map();
 setInterval(() => { const now = Date.now(); for (const [key, value] of rates) if (value.until < now) rates.delete(key); }, 60000).unref();
 function json(res, status, value) { res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(value)); }
@@ -31,7 +35,7 @@ export const server = http.createServer(async (req, res) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self'; font-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'");
+  res.setHeader('Content-Security-Policy', `default-src 'self'; img-src 'self' https://*.googletagmanager.com https://*.google-analytics.com; font-src 'self'; script-src 'self' 'sha256-${tagHash}' https://www.googletagmanager.com; style-src 'self'; connect-src 'self' https://*.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com; frame-src https://www.googletagmanager.com; base-uri 'self'; frame-ancestors 'none'; form-action 'self'`);
   try {
     const url = new URL(req.url, 'http://localhost');
     if (url.pathname === '/api/config' && req.method === 'GET') return json(res, 200, { leadCaptureEnabled: enabled });

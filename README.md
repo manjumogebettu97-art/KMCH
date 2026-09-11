@@ -12,7 +12,7 @@ The receiver is write-only, validates the nine answers and consent, rejects over
 
 An optional Node server adapter remains available: configure `GOOGLE_APPS_SCRIPT_URL` and a matching private `LEAD_WEBHOOK_TOKEN` on the server and in Apps Script Properties. The Node server limits requests by socket IP and restricts served files. GitHub Pages uses the direct connection and does not require this server.
 
-Leads include all nine form answers, consent, timestamp, UTM parameters, GCLID, request ID, and status. No ad conversion tag is configured; add the approved Google Ads identifiers before campaign launch.
+Leads include all nine form answers, consent, timestamp, UTM parameters, GCLID, request ID, and status. Google Tag Manager container `GTM-KBSMCVBN` is installed in the head with its noscript fallback immediately after the opening body. The form emits `kmch_lead_submitted` only after confirmed delivery, without form answers in the event. The ads team must verify the published container and configure/test the intended Google Ads conversion tag; installing the container alone does not verify conversion reporting. The optional Node server permits the exact GTM bootstrap via a CSP hash; additional tags may need their own narrowly scoped host permissions.
 
 ## Sources
 
